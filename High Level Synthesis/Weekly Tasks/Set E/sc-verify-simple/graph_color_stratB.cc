@@ -12,43 +12,45 @@ typedef ac_int<N,false> row_array;
 typedef ac_int<cnt_bit,false> count_int;
 typedef row_array adj_matrix[N];
 
-#pragma hls_design_top
-void CCS_BLOCK(graph_color)(adj_matrix Adj_G, short int &colors_needed){
+#pragma hls_design top
+void (CCS_BLOCK)(graph_color)(adj_matrix Adj_G, short int &colors_needed){
 	colors_needed = 0;
 	count_int col_cntr = 0;
+	count_int clr;
 	count_int color_array[N];
-	bool flag = false;
-	bool finish_flag = false;
-	
 	color_array_init: for (count_int i=0; i<N; i++) color_array[i] = 0;
-	count_int edges_checked;
 	count_int current_row = 0;
+	row_array current_row_array;
+	row_array neighbours_colors_found;
+	
 	count_int neighbours_to_visit_cnt = 0;
 	row_array neigbhours_to_visit=0;
+	row_array colors_found;
+	
+	bool color_flag;
+	bool flag = false;
 	
 	for (short int run = 0; run<N; run++){
-		if (!finish_flag){
-			count_int clr = 1;
-			row_array current_row_array = Adj_G[current_row];
-			row_array neighbours_with_color_checked = 0;
-			
 			check_neigh_loop:
-			for (short int col=0; col<N; col++) if (current_row_array[col]) if (color_array[col]) neighbours_with_color_checked[color_array[col]-1]=1;
-			
-			bool color_flag = true;
-			
-			select_color_loop:
-			for (short int i=0; i<N; i++){
-				if (color_flag and !neighbours_with_color_checked[i]){
+			for (short int col=0; col<N; col++){
+				if (!col){
+					current_row_array = Adj_G[current_row];
+					neighbours_colors_found = 0;
+				}
+				if (current_row_array[col]) if (color_array[col]) neighbours_colors_found[color_array[col]-1]=1;;
+				
+			}
+
+			select_color_loop:for (int i=0; i<N; i++){
+				if (!i) color_flag = true;
+				if (color_flag and !neighbours_colors_found[i]){
 					color_flag = false;
 					clr = i+1;
 				}
 			}
-			
+					
 			color_array[current_row] = clr;
 			if (clr>colors_needed) colors_needed=clr;
-			
-			edges_checked+=1;
 			
 			if (!flag){
 				select_next_row_loop:
@@ -84,11 +86,7 @@ void CCS_BLOCK(graph_color)(adj_matrix Adj_G, short int &colors_needed){
 					}
 				}
 			}
-			
-			if (edges_checked == N) finish_flag=true;
 		}
-	}
-	
 }
 
 CCS_MAIN(int argc, char* argv[]) {

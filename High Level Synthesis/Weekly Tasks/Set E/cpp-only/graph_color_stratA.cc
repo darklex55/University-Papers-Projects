@@ -10,37 +10,28 @@ typedef row_array adj_matrix[N];
 
 void graph_color(adj_matrix Adj_G, short int &colors_needed){
 	colors_needed = 0;
+	short int col_cntr = 0;
 	short int color_array[N];
-	
+
 	color_array_init: for (int i=0; i<N; i++) color_array[i] = 0;
-	
+
 	row_loop: for (int row=0;row<N;row++){
 		short int clr = 1;
 		row_array current_row =  Adj_G[row];
 		row_array neighbours_with_color = 0;
-		
+
 		check_neigh_loop: 
 		for (int col=0; col<N; col++) if (current_row[col]) if (color_array[col]) 
-		neighbours_with_color[col]=1;
-	
-		short int min_ptr = 2;
-		short int max_ptr = 1;
-		
+		neighbours_with_color[color_array[col]-1]=1;
+
+		bool flag = true;
+
 		select_color_loop:for (int i=0; i<N; i++){
-			if (neighbours_with_color[i]){
-				if (color_array[i]>max_ptr) max_ptr = color_array[i];
-				if (color_array[i]==min_ptr){
-					min_ptr+=1;
-					if (min_ptr==max_ptr){
-						min_ptr+=1;
-					}
-				}
-				if (clr==color_array[i]){
-					clr = min_ptr;
-					min_ptr+=1;
-				}
+			if (flag and !neighbours_with_color[i]){
+				flag = false;
+				clr = i+1;
 			}
-		}	
+		}
 		color_array[row] = clr;
 		if (clr>colors_needed) colors_needed=clr;
 	}
