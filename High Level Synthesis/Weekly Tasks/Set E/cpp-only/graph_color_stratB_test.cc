@@ -3,8 +3,6 @@
 #include <ctime>
 #include <ac_int.h>
 
-#include "mc_scverify.h"
-
 static const short int N = 6;
 static const short int cnt_bit = 3;
 
@@ -12,8 +10,7 @@ typedef ac_int<N,false> row_array;
 typedef ac_int<cnt_bit,false> count_int;
 typedef row_array adj_matrix[N];
 
-#pragma hls_design_top
-void CCS_BLOCK(graph_color)(adj_matrix Adj_G, short int &colors_needed){
+void graph_color(adj_matrix Adj_G, short int &colors_needed){
 	colors_needed = 0;
 	count_int col_cntr = 0;
 	count_int clr;
@@ -103,7 +100,7 @@ void CCS_BLOCK(graph_color)(adj_matrix Adj_G, short int &colors_needed){
 		}
 }
 
-CCS_MAIN(int argc, char* argv[]) {
+int main() {
   adj_matrix test_matrix[3];
   test_matrix[0][0]=0b111010;
   test_matrix[0][1]=0b010101;
@@ -136,6 +133,6 @@ CCS_MAIN(int argc, char* argv[]) {
 	  std::cout<<"Graph "<< test+1 <<" | Minimum Colors: "<<min_color_num[test]
 	  <<" | Colors Computed: "<< clr_needed<<"\n";
 	}
-  CCS_RETURN(0);
+  return 0;
 }
 
